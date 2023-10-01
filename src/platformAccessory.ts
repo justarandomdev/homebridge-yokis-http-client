@@ -96,7 +96,7 @@ export class ExamplePlatformAccessory {
    */
   async getOn(): Promise<CharacteristicValue> {
     // implement your own code to check if the device is on
-    await this.platform.client.fetchStatus;
+    await this.platform.client.fetchStatus();
     const isOn = this.platform.client.modules[this.accessory.context.device.uid].isOn ?? false;
 
     this.platform.log.debug('Get Characteristic On ->', isOn);
