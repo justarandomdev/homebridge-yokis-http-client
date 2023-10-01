@@ -26,9 +26,9 @@ export class ExamplePlatformAccessory {
 
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Default-Manufacturer')
-      .setCharacteristic(this.platform.Characteristic.Model, 'Default-Model')
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, 'Default-Serial');
+      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Yokis')
+      .setCharacteristic(this.platform.Characteristic.Model, 'MTR2000ER')
+      .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.uid);
 
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
@@ -36,7 +36,7 @@ export class ExamplePlatformAccessory {
 
     // set the service name, this is what is displayed as the default name on the Home app
     // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
-    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.exampleDisplayName);
+    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.name);
 
     // each service must implement at-minimum the "required characteristics" for the given service type
     // see https://developers.homebridge.io/#/service/Lightbulb
@@ -61,34 +61,18 @@ export class ExamplePlatformAccessory {
      * can use the same sub type id.)
      */
 
-    // Example: add two "motion sensor" services to the accessory
-    const motionSensorOneService = this.accessory.getService('Motion Sensor One Name') ||
-      this.accessory.addService(this.platform.Service.MotionSensor, 'Motion Sensor One Name', 'YourUniqueIdentifier-1');
-
-    const motionSensorTwoService = this.accessory.getService('Motion Sensor Two Name') ||
-      this.accessory.addService(this.platform.Service.MotionSensor, 'Motion Sensor Two Name', 'YourUniqueIdentifier-2');
-
-    /**
-     * Updating characteristics values asynchronously.
-     *
-     * Example showing how to update the state of a Characteristic asynchronously instead
-     * of using the `on('get')` handlers.
-     * Here we change update the motion sensor trigger states on and off every 10 seconds
-     * the `updateCharacteristic` method.
-     *
-     */
-    let motionDetected = false;
     setInterval(() => {
-      // EXAMPLE - inverse the trigger
-      motionDetected = !motionDetected;
+      this.updateAccessoryState();
+    }, 500);
+  }
 
-      // push the new value to HomeKit
-      motionSensorOneService.updateCharacteristic(this.platform.Characteristic.MotionDetected, motionDetected);
-      motionSensorTwoService.updateCharacteristic(this.platform.Characteristic.MotionDetected, !motionDetected);
-
-      this.platform.log.debug('Triggering motionSensorOneService:', motionDetected);
-      this.platform.log.debug('Triggering motionSensorTwoService:', !motionDetected);
-    }, 10000);
+  async updateAccessoryState() {
+    try {
+      const module = this.platform.client.modules[this.accessory.context.device.uid];
+      this.service.updateCharacteristic(this.platform.Characteristic.On, module.isOn ?? false);
+    } catch (error: any) {
+      this.platform.log.error('[updateAccessoryState] Error on getModuleStatus response:', error);
+    }
   }
 
   /**
@@ -97,8 +81,7 @@ export class ExamplePlatformAccessory {
    */
   async setOn(value: CharacteristicValue) {
     // implement your own code to turn your device on/off
-    this.exampleStates.On = value as boolean;
-
+    this.platform.client.toggleModule(this.accessory.context.device.uid, value as boolean);
     this.platform.log.debug('Set Characteristic On ->', value);
   }
 
@@ -117,7 +100,8 @@ export class ExamplePlatformAccessory {
    */
   async getOn(): Promise<CharacteristicValue> {
     // implement your own code to check if the device is on
-    const isOn = this.exampleStates.On;
+    await this.platform.client.fetchStatus;
+    const isOn = this.platform.client.modules[this.accessory.context.device.uid].isOn ?? false;
 
     this.platform.log.debug('Get Characteristic On ->', isOn);
 
@@ -126,16 +110,4 @@ export class ExamplePlatformAccessory {
 
     return isOn;
   }
-
-  /**
-   * Handle "SET" requests from HomeKit
-   * These are sent when the user changes the state of an accessory, for example, changing the Brightness
-   */
-  async setBrightness(value: CharacteristicValue) {
-    // implement your own code to set the brightness
-    this.exampleStates.Brightness = value as number;
-
-    this.platform.log.debug('Set Characteristic Brightness -> ', value);
-  }
-
 }
