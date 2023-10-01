@@ -60,7 +60,8 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
 
       // see if an accessory with the same uuid has already been registered and restored from
       // the cached devices we stored in the `configureAccessory` method above
-      const existingAccessory = this.accessories.find(accessory => accessory.UUID === uid);
+      const uuid = this.api.hap.uuid.generate('Yokis-' + this.client.modules[uid].uid);
+      const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
 
       if (existingAccessory) {
         // the accessory already exists
@@ -83,7 +84,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         this.log.info('Adding new accessory:', this.client.modules[uid].name);
 
         // create a new accessory
-        const accessory = new this.api.platformAccessory(this.client.modules[uid].name, uid);
+        const accessory = new this.api.platformAccessory(this.client.modules[uid].name, uuid);
 
         // store a copy of the device object in the `accessory.context`
         // the `context` property can be used to store any data about the accessory you may need
