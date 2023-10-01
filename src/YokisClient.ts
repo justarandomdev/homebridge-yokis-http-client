@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Logger } from 'homebridge';
 
 const BASE_ENDPOINT = 'https://www.yokiscloud.fr/api/1_28/individuals/';
 
@@ -14,17 +15,16 @@ class YokisModule {
 }
 
 export class YokisClient {
+  logger: Logger;
   username: string;
   password: string;
   userId?: string;
   boxId?: string;
   token?: string;
   modules: { [key: string]: YokisModule } = {};
-  /**
-     * Constructor
-     * @returns void
-     */
-  constructor(username: string, password: string) {
+
+  constructor(logger: Logger, username: string, password: string) {
+    this.logger = logger;
     this.username = username;
     this.password = password;
   }
@@ -43,7 +43,7 @@ export class YokisClient {
         throw new Error(`HTTP request failed with status code: ${response.status}`);
       }
     } catch (error) {
-      console.error('Error making HTTP request:', error);
+      this.logger.error('Error making HTTP request:', error);
       throw error;
     }
   }
@@ -63,7 +63,7 @@ export class YokisClient {
         throw new Error(`HTTP request failed with status code: ${response.status}`);
       }
     } catch (error) {
-      console.error('Error making HTTP request:', error);
+      this.logger.error('Error making HTTP request:', error);
       throw error;
     }
   }
@@ -83,7 +83,7 @@ export class YokisClient {
         throw new Error(`HTTP request failed with status code: ${response.status}`);
       }
     } catch (error) {
-      console.error('Error making HTTP request:', error);
+      this.logger.error('Error making HTTP request:', error);
       throw error;
     }
   }
@@ -95,11 +95,9 @@ export class YokisClient {
         this.userId = response.data.id;
         this.boxId = response.data.boxes[0].boxId;
         this.token = response.data.token;
-
-        console.log('Response:', response.data);
       })
       .catch((error) => {
-        console.error('Error making HTTP request:', error);
+        this.logger.error('Error making HTTP request:', error);
       });
   }
 
@@ -112,11 +110,9 @@ export class YokisClient {
             this.modules[module.uid] = new YokisModule(module.name, module.uid);
           }
         }
-        console.log('Modules', this.modules);
-        console.log('Response:', response.data);
       })
       .catch((error) => {
-        console.error('Error making HTTP request:', error);
+        this.logger.error('Error making HTTP request:', error);
       });
   }
 
@@ -127,10 +123,9 @@ export class YokisClient {
         for (const module of response.data.data.table) {
           this.modules[module.uid].isOn = module.var === 0 ? false : true;
         }
-        console.log('Response:', response.data);
       })
       .catch((error) => {
-        console.error('Error making HTTP request:', error);
+        this.logger.error('Error making HTTP request:', error);
       });
   }
 
@@ -139,10 +134,10 @@ export class YokisClient {
     const payload = JSON.stringify({'cmd': `command.xml?action=order&id=${moduleUid}&order=${on ? 'on' : 'off'}`});
     await this.authentifiedPostHttpRequest(url, this.token!, payload)
       .then((response) => {
-        console.log('Response:', response.data);
+        this.logger.info('Toggle Result:', response.data);
       })
       .catch((error) => {
-        console.error('Error making HTTP request:', error);
+        this.logger.error('Error making HTTP request:', error);
       });
   }
 }
