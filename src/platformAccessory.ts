@@ -41,7 +41,7 @@ export class YokisHTTPAccessory {
 
   async setOn(value: CharacteristicValue) {
     await this.platform.client.toggleModule(this.accessory.context.device.uid, value as boolean);
-    await this.platform.client.fetchStatus();
+    this.platform.client.modules[this.accessory.context.device.uid].isOn = value as boolean;
     this.updateAccessoryState();
     this.platform.log.debug('Set Characteristic On ->', value);
   }
