@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { Logger } from 'homebridge';
 
 const BASE_ENDPOINT = 'https://www.yokiscloud.fr/api/1_28/individuals/';
@@ -29,7 +29,7 @@ export class YokisClient {
     this.password = password;
   }
 
-  async postHttpRequest(url: string, payload: string): Promise<any> {
+  async postHttpRequest(url: string, payload: string): Promise<AxiosResponse> {
     try {
       const response = await axios.post(url, payload, {
         headers: {
@@ -48,7 +48,7 @@ export class YokisClient {
     }
   }
 
-  async authentifiedGetHttpRequest(url: string, token: string): Promise<any> {
+  async authentifiedGetHttpRequest(url: string, token: string): Promise<AxiosResponse> {
     try {
       const response = await axios.get(url, {
         headers: {
@@ -68,7 +68,7 @@ export class YokisClient {
     }
   }
 
-  async authentifiedPostHttpRequest(url: string, token: string, payload): Promise<any> {
+  async authentifiedPostHttpRequest(url: string, token: string, payload): Promise<AxiosResponse> {
     try {
       const response = await axios.post(url, payload, {
         headers: {
