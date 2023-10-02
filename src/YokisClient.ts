@@ -121,7 +121,9 @@ export class YokisClient {
     await this.authentifiedGetHttpRequest(url, this.token!)
       .then((response) => {
         for (const module of response.data.data.table) {
-          this.modules[module.uid].isOn = module.var === 0 ? false : true;
+          const isOn = module.var === 0 ? false : true;
+          this.logger.debug(`Result of fetch status: module ${this.modules[module.uid].name} is on: ${isOn}, var value: ${module.var}`);
+          this.modules[module.uid].isOn = isOn;
         }
       })
       .catch((error) => {
@@ -134,7 +136,7 @@ export class YokisClient {
     const payload = JSON.stringify({'cmd': `command.xml?action=order&id=${moduleUid}&order=${on ? 'on' : 'off'}`});
     await this.authentifiedPostHttpRequest(url, this.token!, payload)
       .then((response) => {
-        this.logger.info('Toggle Result:', response.data);
+        this.logger.debug('Toggle Result:', response.data);
       })
       .catch((error) => {
         this.logger.error('Error making HTTP request:', error);

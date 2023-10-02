@@ -40,10 +40,10 @@ export class YokisHTTPPlatform implements DynamicPlatformPlugin {
       const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
 
       if (existingAccessory) {
-        this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
+        this.log.debug('Restoring existing accessory from cache:', existingAccessory.displayName);
         new YokisHTTPAccessory(this, existingAccessory);
       } else {
-        this.log.info('Adding new accessory:', this.client.modules[uid].name);
+        this.log.debug('Adding new accessory:', this.client.modules[uid].name);
         const accessory = new this.api.platformAccessory(this.client.modules[uid].name, uuid);
         accessory.context.device = this.client.modules[uid];
         new YokisHTTPAccessory(this, accessory);

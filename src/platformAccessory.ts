@@ -31,7 +31,9 @@ export class YokisHTTPAccessory {
   async updateAccessoryState() {
     try {
       const module = this.platform.client.modules[this.accessory.context.device.uid];
-      this.service.updateCharacteristic(this.platform.Characteristic.On, module.isOn ?? false);
+      const isOn = module.isOn ?? false;
+      this.platform.log.debug(`Updating accessory state: accessory ${module.name} is on: ${isOn}`);
+      this.service.updateCharacteristic(this.platform.Characteristic.On, isOn);
     } catch (error) {
       this.platform.log.error('[updateAccessoryState] Error on getModuleStatus response:', error);
     }
@@ -45,10 +47,9 @@ export class YokisHTTPAccessory {
   }
 
   async getOn(): Promise<CharacteristicValue> {
-    await this.platform.client.fetchStatus();
-    const isOn = this.platform.client.modules[this.accessory.context.device.uid].isOn ?? false;
-    this.platform.log.debug('Get Characteristic On ->', isOn);
-
+    const module = this.platform.client.modules[this.accessory.context.device.uid];
+    const isOn = module.isOn ?? false;
+    this.platform.log.debug(`Getting characteristic on status for accessory ${module.name} is on: ${isOn}`);
     return isOn;
   }
 }
