@@ -1,16 +1,17 @@
 {
   "pluginAlias": "YokisHTTPClient",
   "pluginType": "platform",
-  "singular": true,
+  "headerDisplay": "Please enter the username and password you use in your Yokis YnO app",
   "schema": {
-    "type": "object",
-    "properties": {
-      "name": {
-        "title": "Yokis HTTP Client",
-        "type": "string",
-        "required": true,
-        "default": "Yokis HTTP Client Platform"
-      }
+    "username": {
+      "title": "Username",
+      "type": "string",
+      "required": true
+    },
+    "password": {
+      "title": "Password",
+      "type": "string",
+      "required": true
     }
   }
 }

@@ -16,6 +16,7 @@ export class YokisHTTPPlatform implements DynamicPlatformPlugin {
     public readonly config: PlatformConfig,
     public readonly api: API,
   ) {
+    this.client = new YokisClient(log, config.username, config.password);
     this.log.debug('Finished initializing platform:', this.config.name);
 
     this.api.on('didFinishLaunching', () => {
