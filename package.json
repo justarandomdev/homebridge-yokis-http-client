@@ -1,5 +1,4 @@
 {
-  "private": true,
   "displayName": "Yokis HTTP Client",
   "name": "homebridge-yokis-http-client",
   "version": "0.0.1",
