@@ -1,7 +1,7 @@
 {
   "displayName": "Yokis HTTP Client",
   "name": "homebridge-yokis-http-client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Homebridge plugin to interface with Yokis MTR2000ER wireless switches often used in for lightbulbs.",
   "license": "MIT",
   "repository": {
@@ -12,7 +12,7 @@
     "url": "https://github.com/justarandomdev/homebridge-yokis-http-client/pulls"
   },
   "engines": {
-    "node": "^20.8.0",
+    "node": "^18.17.0",
     "homebridge": "^1.6.0"
   },
   "main": "dist/index.js",

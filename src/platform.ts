@@ -9,20 +9,24 @@ export class YokisHTTPPlatform implements DynamicPlatformPlugin {
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
 
   public readonly accessories: PlatformAccessory[] = [];
-  public client: YokisClient;
+  public client!: YokisClient;
 
   constructor(
     public readonly log: Logger,
     public readonly config: PlatformConfig,
     public readonly api: API,
   ) {
-    this.client = new YokisClient(log, config.username, config.password);
-    this.log.debug('Finished initializing platform:', this.config.name);
+    if (!config.username || !config.password) {
+      this.log.debug('Configuration missing, no username and/or password');
+    } else {
+      this.client = new YokisClient(log, config.username, config.password);
+      this.log.debug('Finished initializing platform:', this.config.name);
 
-    this.api.on('didFinishLaunching', () => {
-      log.debug('Executed didFinishLaunching callback');
-      this.discoverDevices();
-    });
+      this.api.on('didFinishLaunching', () => {
+        log.debug('Executed didFinishLaunching callback');
+        this.discoverDevices();
+      });
+    }
   }
 
   configureAccessory(accessory: PlatformAccessory) {
